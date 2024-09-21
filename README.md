@@ -43,7 +43,6 @@ git clone https://github.com/yourusername/background-image-download.git
     - The filename will be extracted from the image URL, preserving the original name and supporting Unicode characters.
 
 ## Screenshots
-_Right-click context menu option.__Notification of successful download._
 
 ## Permissions
 The extension requires the following permissions:
