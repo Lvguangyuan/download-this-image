@@ -20,6 +20,12 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 chrome.downloads.download({
                     url: response.imageUrl,
                     filename: filename
+                }, (downloadId) => {
+                    if (chrome.runtime.lastError) {
+                        console.error('Download failed:', chrome.runtime.lastError);
+                    } else {
+                        console.log('Download started with ID:', downloadId);
+                    }
                 });
             } else {
                 // Handle errors (e.g., show a notification)
@@ -29,11 +35,19 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
     }
 });
 
-// Function to extract filename from URL
+// Function to extract filename from URL (updated)
 function getFilenameFromUrl(url) {
     try {
-        const urlObj = new URL(url);
+        // Encode the URL to ensure it's properly formatted
+        const encodedUrl = encodeURI(url);
+
+        // Create a URL object from the encoded URL
+        const urlObj = new URL(encodedUrl);
+
         let pathname = urlObj.pathname;
+
+        // Decode the pathname to get the original characters
+        pathname = decodeURIComponent(pathname);
 
         // Handle cases where the URL might end with a slash
         if (pathname.endsWith('/')) {
@@ -43,22 +57,31 @@ function getFilenameFromUrl(url) {
         // Extract the filename
         let filename = pathname.substring(pathname.lastIndexOf('/') + 1);
 
+        // Remove query parameters or hash fragments from filename
+        filename = filename.split('?')[0].split('#')[0];
+
         // If filename is empty, use a default name
         if (!filename) {
             filename = 'background-image';
         }
 
-        // Optional: Remove query parameters or hash fragments from filename
-        filename = filename.split('?')[0].split('#')[0];
-
-        // Ensure the filename has an extension, default to '.jpg' if not
+        // Ensure the filename has an extension; default to '.jpg' if not
         if (!filename.includes('.')) {
             filename += '.jpg';
         }
+
+        // Sanitize filename to remove illegal characters
+        filename = sanitizeFilename(filename);
 
         return filename;
     } catch (error) {
         console.error('Error parsing URL:', error);
         return 'background-image.jpg';
     }
+}
+
+// Function to sanitize filename (allowing Unicode characters)
+function sanitizeFilename(filename) {
+    // Remove illegal characters: \ / : * ? " < > | and control characters
+    return filename.replace(/[\\\/:*?"<>|\x00-\x1F\x7F]/g, '_');
 }

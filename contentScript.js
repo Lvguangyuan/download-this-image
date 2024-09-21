@@ -12,9 +12,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             const style = window.getComputedStyle(clickedElement);
             const backgroundImage = style.getPropertyValue('background-image');
             if (backgroundImage && backgroundImage !== 'none') {
-                const urlMatch = backgroundImage.match(/url\(["']?(.+?)["']?\)/);
+                const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
                 if (urlMatch && urlMatch[1]) {
-                    sendResponse({ imageUrl: urlMatch[1] });
+                    // Handle relative URLs
+                    let imageUrl = urlMatch[1];
+                    if (!/^https?:\/\//i.test(imageUrl)) {
+                        // Convert relative URL to absolute URL
+                        imageUrl = new URL(imageUrl, window.location.href).href;
+                    }
+                    imageUrl = decodeURI(imageUrl);
+                    sendResponse({ imageUrl: imageUrl });
                 } else {
                     sendResponse({ error: 'No valid background image URL found.' });
                 }
