@@ -11,6 +11,10 @@
 + **Error Handling**: Provides notifications if the image cannot be downloaded due to restrictions like CORS policies.
 + **Lightweight and Private**: The extension is lightweight and respects your privacy by not collecting any data.
 
+## Features in plan
++ **Also can download image**
++ **Configure default download folder**
+
 ## Installation
 ### From Source
 1. **Clone or Download the Repository**
