@@ -14,6 +14,7 @@
 ## Features in plan
 + **Also can download image**
 + **Configure default download folder**
++ **Publish to chrome store**
 
 ## Installation
 ### From Source
