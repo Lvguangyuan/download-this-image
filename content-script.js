@@ -32,15 +32,36 @@ function findImageInDescendants(element) {
     return null;
 }
 
+// Function to search for images in siblings
+function findImageInSiblings(element) {
+    const parent = element.parentElement;
+    if (!parent) {
+        return null;
+    }
+
+    for (let sibling of parent.children) {
+        if (sibling !== element) {
+            let src = findImageInDescendants(sibling);
+            if (src) {
+                return src;
+            }
+        }
+    }
+    return null;
+}
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === ACTION_GET_IMAGE) {
         if (clickedElement) {
             let imageUrl = null;
 
-            // Try to get image from <img> tag in the clicked element or its descendants
+            // Try to get image from the clicked element or its descendants
             imageUrl = findImageInDescendants(clickedElement);
 
-            console.log("url here.........")
+            if (!imageUrl) {
+                // If no image found in descendants, try siblings
+                imageUrl = findImageInSiblings(clickedElement);
+            }
 
             if (imageUrl) {
                 // Handle relative URLs
