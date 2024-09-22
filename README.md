@@ -59,7 +59,7 @@ The extension requires the following permissions:
 + `**host permissions**` (`<all_urls>`): To operate on all websites you visit.
 
 ## How It Works
-+ **Content Script (**`**contentScript.js**`**)**: Listens for right-click events to identify the clicked element and retrieves its background image URL.
++ **Content Script (**`**content-script.js**`**)**: Listens for right-click events to identify the clicked element and retrieves its background image URL.
 + **Background Script (**`**background.js**`**)**: Handles the creation of the context menu and communicates with the content script to initiate the download.
 + **Filename Extraction**: Extracts the filename from the image URL, properly handling URLs with Unicode characters and sanitizing filenames to remove illegal characters.
 
@@ -72,7 +72,7 @@ The extension requires the following permissions:
 ### File Structure
 + `manifest.json`: Extension manifest file.
 + `background.js`: Background service worker script.
-+ `contentScript.js`: Content script injected into web pages.
++ `content-script.js`: Content script injected into web pages.
 + `icons/`: Directory containing extension icons.
 + `screenshots/`: Directory containing images for the README.
 

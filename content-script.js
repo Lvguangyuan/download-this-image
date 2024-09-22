@@ -7,7 +7,7 @@ document.addEventListener('mousedown', (event) => {
 }, true);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'getBackgroundImage') {
+    if (message.action === DOWNLOAD_IMAGE_ACTION) {
         if (clickedElement) {
             const style = window.getComputedStyle(clickedElement);
             const backgroundImage = style.getPropertyValue('background-image');
@@ -20,16 +20,15 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                         // Convert relative URL to absolute URL
                         imageUrl = new URL(imageUrl, window.location.href).href;
                     }
-                    imageUrl = decodeURI(imageUrl);
-                    sendResponse({ imageUrl: imageUrl });
+                    sendResponse({imageUrl: decodeURI(imageUrl)});
                 } else {
-                    sendResponse({ error: 'No valid background image URL found.' });
+                    sendResponse({error: 'No valid background image URL found.'});
                 }
             } else {
-                sendResponse({ error: 'No background image found on this element.' });
+                sendResponse({error: 'No background image found on this element.'});
             }
         } else {
-            sendResponse({ error: 'No element was right-clicked.' });
+            sendResponse({error: 'No element was right-clicked.'});
         }
     }
     return true; // Indicates asynchronous response

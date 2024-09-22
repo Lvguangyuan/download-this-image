@@ -1,17 +1,20 @@
+
+importScripts('const.js');
+
 // Create the context menu when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
-        id: 'downloadBackgroundImage',
-        title: 'Download Background Image',
+        id: CONTEXT_MENU_ID,
+        title: 'Download This Image',
         contexts: ['all']
     });
 });
 
 // Listen for context menu click events
 chrome.contextMenus.onClicked.addListener((info, tab) => {
-    if (info.menuItemId === 'downloadBackgroundImage') {
+    if (info.menuItemId === CONTEXT_MENU_ID) {
         // Send a message to the content script to get the background image URL
-        chrome.tabs.sendMessage(tab.id, { action: 'getBackgroundImage' }, (response) => {
+        chrome.tabs.sendMessage(tab.id, { action: DOWNLOAD_IMAGE_ACTION }, (response) => {
             if (response && response.imageUrl) {
                 // Extract filename from the image URL
                 const filename = getFilenameFromUrl(response.imageUrl);
