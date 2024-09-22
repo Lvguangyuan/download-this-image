@@ -1,3 +1,5 @@
+// contentScript.js
+
 let clickedElement = null;
 
 document.addEventListener('mousedown', (event) => {
@@ -7,28 +9,37 @@ document.addEventListener('mousedown', (event) => {
 }, true);
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === DOWNLOAD_IMAGE_ACTION) {
+    if (message.action === ACTION_GET_IMAGE) {
         if (clickedElement) {
-            const style = window.getComputedStyle(clickedElement);
-            const backgroundImage = style.getPropertyValue('background-image');
-            if (backgroundImage && backgroundImage !== 'none') {
-                const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-                if (urlMatch && urlMatch[1]) {
-                    // Handle relative URLs
-                    let imageUrl = urlMatch[1];
-                    if (!/^https?:\/\//i.test(imageUrl)) {
-                        // Convert relative URL to absolute URL
-                        imageUrl = new URL(imageUrl, window.location.href).href;
-                    }
-                    sendResponse({imageUrl: decodeURI(imageUrl)});
-                } else {
-                    sendResponse({error: 'No valid background image URL found.'});
-                }
+            let imageUrl = null;
+
+            // Check if the clicked element is an <img> tag
+            if (clickedElement.tagName.toLowerCase() === 'img') {
+                imageUrl = clickedElement.src;
             } else {
-                sendResponse({error: 'No background image found on this element.'});
+                // Try to get background-image
+                const style = window.getComputedStyle(clickedElement);
+                const backgroundImage = style.getPropertyValue('background-image');
+
+                if (backgroundImage && backgroundImage !== 'none') {
+                    const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+                    if (urlMatch && urlMatch[1]) {
+                        imageUrl = urlMatch[1];
+                    }
+                }
+            }
+
+            if (imageUrl) {
+                // Handle relative URLs
+                if (!/^https?:\/\//i.test(imageUrl)) {
+                    imageUrl = new URL(imageUrl, window.location.href).href;
+                }
+                sendResponse({ imageUrl: imageUrl });
+            } else {
+                sendResponse({ error: ERROR_NO_IMAGE });
             }
         } else {
-            sendResponse({error: 'No element was right-clicked.'});
+            sendResponse({ error: ERROR_NO_ELEMENT });
         }
     }
     return true; // Indicates asynchronous response

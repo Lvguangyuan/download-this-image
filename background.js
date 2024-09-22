@@ -1,3 +1,4 @@
+// background.js
 
 importScripts('const.js');
 
@@ -5,7 +6,7 @@ importScripts('const.js');
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
         id: CONTEXT_MENU_ID,
-        title: 'Download This Image',
+        title: CONTEXT_MENU_TITLE,
         contexts: ['all']
     });
 });
@@ -13,8 +14,8 @@ chrome.runtime.onInstalled.addListener(() => {
 // Listen for context menu click events
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === CONTEXT_MENU_ID) {
-        // Send a message to the content script to get the background image URL
-        chrome.tabs.sendMessage(tab.id, { action: DOWNLOAD_IMAGE_ACTION }, (response) => {
+        // Send a message to the content script to get the image URL
+        chrome.tabs.sendMessage(tab.id, { action: ACTION_GET_IMAGE }, (response) => {
             if (response && response.imageUrl) {
                 // Extract filename from the image URL
                 const filename = getFilenameFromUrl(response.imageUrl);
@@ -26,60 +27,72 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 }, (downloadId) => {
                     if (chrome.runtime.lastError) {
                         console.error('Download failed:', chrome.runtime.lastError);
+                        chrome.notifications.create({
+                            type: 'basic',
+                            iconUrl: 'icons/icon48.png',
+                            title: 'Download Failed',
+                            message: `Could not download image: ${chrome.runtime.lastError.message}`
+                        });
                     } else {
                         console.log('Download started with ID:', downloadId);
+                        chrome.notifications.create({
+                            type: 'basic',
+                            iconUrl: 'icons/icon48.png',
+                            title: 'Download Started',
+                            message: `Downloading image as ${filename}`
+                        });
                     }
                 });
             } else {
                 // Handle errors (e.g., show a notification)
                 console.error(response.error || 'An unknown error occurred.');
+                chrome.notifications.create({
+                    type: 'basic',
+                    iconUrl: 'icons/icon48.png',
+                    title: 'Error',
+                    message: response.error || 'An unknown error occurred.'
+                });
             }
         });
     }
 });
 
-// Function to extract filename from URL (updated)
+// Function to extract filename from URL
 function getFilenameFromUrl(url) {
     try {
-        // Encode the URL to ensure it's properly formatted
+        // Encode and decode URL to handle special characters
         const encodedUrl = encodeURI(url);
-
-        // Create a URL object from the encoded URL
         const urlObj = new URL(encodedUrl);
+        let pathname = decodeURIComponent(urlObj.pathname);
 
-        let pathname = urlObj.pathname;
-
-        // Decode the pathname to get the original characters
-        pathname = decodeURIComponent(pathname);
-
-        // Handle cases where the URL might end with a slash
+        // Remove trailing slashes
         if (pathname.endsWith('/')) {
             pathname = pathname.slice(0, -1);
         }
 
-        // Extract the filename
+        // Extract filename
         let filename = pathname.substring(pathname.lastIndexOf('/') + 1);
 
-        // Remove query parameters or hash fragments from filename
+        // Remove query parameters or fragments
         filename = filename.split('?')[0].split('#')[0];
 
-        // If filename is empty, use a default name
+        // Default filename if none is found
         if (!filename) {
-            filename = 'background-image';
+            filename = DEFAULT_FILENAME;
         }
 
-        // Ensure the filename has an extension; default to '.jpg' if not
+        // Ensure filename has an extension
         if (!filename.includes('.')) {
             filename += '.jpg';
         }
 
-        // Sanitize filename to remove illegal characters
+        // Sanitize filename
         filename = sanitizeFilename(filename);
 
         return filename;
     } catch (error) {
         console.error('Error parsing URL:', error);
-        return 'background-image.jpg';
+        return DEFAULT_FILENAME;
     }
 }
 
