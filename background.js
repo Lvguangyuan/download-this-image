@@ -14,30 +14,43 @@ chrome.runtime.onInstalled.addListener(() => {
 // Listen for context menu click events
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === CONTEXT_MENU_ID) {
-        // Send a message to the content script to get the image URL
-        chrome.tabs.sendMessage(tab.id, { action: ACTION_GET_IMAGE }, (response) => {
-            if (response && response.imageUrl) {
-                // Extract filename from the image URL
-                const filename = getFilenameFromUrl(response.imageUrl);
-
-                // Initiate the download with the extracted filename
-                chrome.downloads.download({
-                    url: response.imageUrl,
-                    filename: filename
-                }, (downloadId) => {
-                    if (chrome.runtime.lastError) {
-                        console.error('Download failed:', chrome.runtime.lastError);
-                        // Notification function removed
-                    } else {
-                        console.log('Download started with ID:', downloadId);
-                        // Notification function removed
-                    }
-                });
-            } else {
-                // Handle errors
-                console.error(response.error || 'An unknown error occurred.');
-                // Notification function removed
+        // Inject const.js and content-script.js into the active tab
+        chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ['const.js', 'content-script.js']
+        }, () => {
+            if (chrome.runtime.lastError) {
+                console.error('Script injection failed:', chrome.runtime.lastError);
+                return;
             }
+
+            // Send a message to the content script to get the image URL
+            chrome.tabs.sendMessage(tab.id, { action: ACTION_GET_IMAGE }, (response) => {
+                if (chrome.runtime.lastError) {
+                    console.error('Message failed:', chrome.runtime.lastError);
+                    return;
+                }
+
+                if (response && response.imageUrl) {
+                    // Extract filename from the image URL
+                    const filename = getFilenameFromUrl(response.imageUrl);
+
+                    // Initiate the download with the extracted filename
+                    chrome.downloads.download({
+                        url: response.imageUrl,
+                        filename: filename
+                    }, (downloadId) => {
+                        if (chrome.runtime.lastError) {
+                            console.error('Download failed:', chrome.runtime.lastError);
+                        } else {
+                            console.log('Download started with ID:', downloadId);
+                        }
+                    });
+                } else {
+                    // Handle errors
+                    console.error(response.error || 'An unknown error occurred.');
+                }
+            });
         });
     }
 });

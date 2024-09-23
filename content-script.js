@@ -1,12 +1,43 @@
-// contentScript.js
+// content-script.js
 
-let clickedElement = null;
+// Listen for messages from the background script
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.action === ACTION_GET_IMAGE) {
+        // Get the element that was right-clicked
+        const clickedElement = getClickedElement();
 
-document.addEventListener('mousedown', (event) => {
-    if (event.button === 2) { // Right-click
-        clickedElement = event.target;
+        if (clickedElement) {
+            let imageUrl = findImageInDescendants(clickedElement);
+
+            if (!imageUrl) {
+                // If no image found in descendants, try siblings
+                imageUrl = findImageInSiblings(clickedElement);
+            }
+
+            if (imageUrl) {
+                // Handle relative URLs
+                if (!/^https?:\/\//i.test(imageUrl)) {
+                    imageUrl = new URL(imageUrl, window.location.href).href;
+                }
+                sendResponse({ imageUrl: decodeURI(imageUrl) });
+            } else {
+                sendResponse({ error: ERROR_NO_IMAGE });
+            }
+        } else {
+            sendResponse({ error: ERROR_NO_ELEMENT });
+        }
     }
-}, true);
+    // Return true to indicate that the response will be sent asynchronously
+    return true;
+});
+
+// Function to find the clicked element
+function getClickedElement() {
+    // Attempt to get the last element that was right-clicked
+    // This relies on an event listener that captures the right-click
+    // If not implemented, default to the active element
+    return document.activeElement;
+}
 
 // Function to search for <img> elements in the descendants
 function findImageInDescendants(element) {
@@ -49,32 +80,3 @@ function findImageInSiblings(element) {
     }
     return null;
 }
-
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === ACTION_GET_IMAGE) {
-        if (clickedElement) {
-            let imageUrl = null;
-
-            // Try to get image from the clicked element or its descendants
-            imageUrl = findImageInDescendants(clickedElement);
-
-            if (!imageUrl) {
-                // If no image found in descendants, try siblings
-                imageUrl = findImageInSiblings(clickedElement);
-            }
-
-            if (imageUrl) {
-                // Handle relative URLs
-                if (!/^https?:\/\//i.test(imageUrl)) {
-                    imageUrl = new URL(imageUrl, window.location.href).href;
-                }
-                sendResponse({ imageUrl: decodeURI(imageUrl) });
-            } else {
-                sendResponse({ error: ERROR_NO_IMAGE });
-            }
-        } else {
-            sendResponse({ error: ERROR_NO_ELEMENT });
-        }
-    }
-    return true; // Indicates asynchronous response
-});
