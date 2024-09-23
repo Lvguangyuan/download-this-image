@@ -27,31 +27,16 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                 }, (downloadId) => {
                     if (chrome.runtime.lastError) {
                         console.error('Download failed:', chrome.runtime.lastError);
-                        chrome.notifications.create({
-                            type: 'basic',
-                            iconUrl: 'icons/icon48.png',
-                            title: 'Download Failed',
-                            message: `Could not download image: ${chrome.runtime.lastError.message}`
-                        });
+                        // Notification function removed
                     } else {
                         console.log('Download started with ID:', downloadId);
-                        chrome.notifications.create({
-                            type: 'basic',
-                            iconUrl: 'icons/icon48.png',
-                            title: 'Download Started',
-                            message: `Downloading image as ${filename}`
-                        });
+                        // Notification function removed
                     }
                 });
             } else {
-                // Handle errors (e.g., show a notification)
+                // Handle errors
                 console.error(response.error || 'An unknown error occurred.');
-                chrome.notifications.create({
-                    type: 'basic',
-                    iconUrl: 'icons/icon48.png',
-                    title: 'Error',
-                    message: response.error || 'An unknown error occurred.'
-                });
+                // Notification function removed
             }
         });
     }

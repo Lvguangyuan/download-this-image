@@ -13,15 +13,6 @@
 ## Installation
 ### From Source
 1. **Clone or Download the Repository**
-
-```plain
-bash
-
-
-Copy code
-git clone https://github.com/yourusername/download-image-extension.git
-```
-
 2. **Open the Extensions Page in Chrome**
     - Navigate to `chrome://extensions/` in your Chrome browser.
 3. **Enable Developer Mode**

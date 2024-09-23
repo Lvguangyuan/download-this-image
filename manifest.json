@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Download Image/Background Image",
+  "name": "Download This Image",
   "version": "1.0",
   "description": "Quickly download images from any webpage by right-clicking on them.",
   "permissions": [
     "downloads",
     "contextMenus",
     "scripting",
-    "notifications"
+    "activeTab"
   ],
   "background": {
     "service_worker": "background.js"
