@@ -1,6 +1,12 @@
 // background.js
 
-importScripts('const.js');
+// Define constants directly
+const CONTEXT_MENU_ID = 'downloadImage';
+const CONTEXT_MENU_TITLE = 'Download This Image';
+const ACTION_GET_IMAGE = 'getImage';
+const DEFAULT_FILENAME = 'image.jpg';
+const ERROR_NO_ELEMENT = 'No element was right-clicked.';
+const ERROR_NO_IMAGE = 'No image found on this element.';
 
 // Create the context menu when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
@@ -14,10 +20,10 @@ chrome.runtime.onInstalled.addListener(() => {
 // Listen for context menu click events
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === CONTEXT_MENU_ID) {
-        // Inject const.js and content-script.js into the active tab
+        // Inject content-script.js into the active tab
         chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ['const.js', 'content-script.js']
+            files: ['content-script.js']
         }, () => {
             if (chrome.runtime.lastError) {
                 console.error('Script injection failed:', chrome.runtime.lastError);
