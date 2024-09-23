@@ -1,6 +1,6 @@
-# Download Image Chrome Extension
+# Download This Image Chrome Extension
 ## Overview
-**Download Image** is a Chrome extension that allows you to quickly download images from any webpage. Whether the image is displayed via an `<img>` tag or set as a CSS `background-image`, you can easily save it to your computer by right-clicking on the image and selecting "Download Image" from the context menu.
+**Download This Image** is a Chrome extension that allows you to quickly download images from any webpage. Whether the image is displayed via an `<img>` tag or set as a CSS `background-image`, you can easily save it to your computer by right-clicking on the image and selecting "Download This Image" from the context menu.
 
 ## Features
 + **Easy to Use**: Right-click and download images without leaving the page.
@@ -39,8 +39,8 @@ git clone https://github.com/yourusername/download-image-extension.git
 2. **Right-Click on an Image**
     - Locate the image you want to download.
     - Right-click on the image or the element containing the background image.
-3. **Select "Download Image"**
-    - In the context menu, click on **"Download Image"**.
+3. **Select "Download This Image"**
+    - In the context menu, click on **"Download This Image"**.
 4. **Image Downloaded**
     - The image will be downloaded to your default download directory.
     - The filename will be extracted from the image URL, preserving the original name and supporting Unicode characters.
@@ -78,33 +78,6 @@ The extension requires the following permissions:
 
 ### Building the Extension
 No build process is required. The extension runs directly from the source files.
-
-## Contributing
-Contributions are welcome! If you have ideas for improvements or have found a bug, please open an issue or submit a pull request.
-
-### Steps to Contribute
-1. **Fork the Repository**
-    - Click on the "Fork" button at the top right corner of the repository page.
-2. **Create a Feature Branch**
-
-```plain
-git checkout -b feature/YourFeatureName
-```
-
-3. **Commit Your Changes**
-
-```plain
-git commit -am 'Add some feature'
-```
-
-4. **Push to the Branch**
-
-```plain
-git push origin feature/YourFeatureName
-```
-
-5. **Open a Pull Request**
-    - Navigate to your forked repository and click on "Compare & pull request".
 
 ## License
 This project is licensed under the [MITLicense](LICENSE).
