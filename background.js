@@ -3,10 +3,7 @@
 // Define constants directly
 const CONTEXT_MENU_ID = 'downloadImage';
 const CONTEXT_MENU_TITLE = 'Download This Image';
-const ACTION_GET_IMAGE = 'getImage';
 const DEFAULT_FILENAME = 'image.jpg';
-const ERROR_NO_ELEMENT = 'No element was right-clicked.';
-const ERROR_NO_IMAGE = 'No image found on this element.';
 
 // Create the context menu when the extension is installed
 chrome.runtime.onInstalled.addListener(() => {
@@ -20,30 +17,112 @@ chrome.runtime.onInstalled.addListener(() => {
 // Listen for context menu click events
 chrome.contextMenus.onClicked.addListener((info, tab) => {
     if (info.menuItemId === CONTEXT_MENU_ID) {
-        // Inject content-script.js into the active tab
-        chrome.scripting.executeScript({
-            target: { tabId: tab.id },
-            files: ['content-script.js']
-        }, () => {
-            if (chrome.runtime.lastError) {
-                console.error('Script injection failed:', chrome.runtime.lastError);
-                return;
-            }
+        // Use info.srcUrl if available
+        if (info.srcUrl) {
+            // Directly download the image
+            const imageUrl = info.srcUrl;
+            const filename = getFilenameFromUrl(imageUrl);
 
-            // Send a message to the content script to get the image URL
-            chrome.tabs.sendMessage(tab.id, { action: ACTION_GET_IMAGE }, (response) => {
+            chrome.downloads.download({
+                url: imageUrl,
+                filename: filename
+            }, (downloadId) => {
                 if (chrome.runtime.lastError) {
-                    console.error('Message failed:', chrome.runtime.lastError);
+                    console.error('Download failed:', chrome.runtime.lastError);
+                } else {
+                    console.log('Download started with ID:', downloadId);
+                }
+            });
+        } else {
+            // Execute a function in the context of the page to find the image
+            chrome.scripting.executeScript({
+                target: { tabId: tab.id },
+                func: () => {
+
+                    // Function to search for <img> elements in the descendants
+                    function findImageInDescendants(element) {
+                        if (!element) return null;
+                        if (element.tagName.toLowerCase() === 'img' && element.src) {
+                            return element.src;
+                        }
+
+                        const style = window.getComputedStyle(element);
+                        const backgroundImage = style.getPropertyValue('background-image');
+                        if (backgroundImage && backgroundImage !== 'none') {
+                            const urlMatch = backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+                            if (urlMatch && urlMatch[1]) {
+                                return urlMatch[1];
+                            }
+                        }
+
+                        for (let child of element.children) {
+                            let src = findImageInDescendants(child);
+                            if (src) {
+                                return src;
+                            }
+                        }
+                        return null;
+                    }
+
+                    // Function to search for images in siblings
+                    function findImageInSiblings(element) {
+                        if (!element) return null;
+                        const parent = element.parentElement;
+                        if (!parent) {
+                            return null;
+                        }
+
+                        for (let sibling of parent.children) {
+                            if (sibling !== element) {
+                                let src = findImageInDescendants(sibling);
+                                if (src) {
+                                    return src;
+                                }
+                            }
+                        }
+                        return null;
+                    }
+
+                    // Main execution
+                    const clickedElement = document.activeElement;
+
+                    if (clickedElement) {
+                        let imageUrl = findImageInDescendants(clickedElement);
+
+                        if (!imageUrl) {
+                            // If no image found in descendants, try siblings
+                            imageUrl = findImageInSiblings(clickedElement);
+                        }
+
+                        if (imageUrl) {
+                            // Handle relative URLs
+                            if (!/^https?:\/\//i.test(imageUrl)) {
+                                imageUrl = new URL(imageUrl, window.location.href).href;
+                            }
+                            // Return the image URL
+                            return { imageUrl: decodeURI(imageUrl) };
+                        } else {
+                            return { error: 'No image found on this element.' };
+                        }
+                    } else {
+                        return { error: 'No element was right-clicked.' };
+                    }
+                },
+                args: []
+            }, (results) => {
+                if (chrome.runtime.lastError) {
+                    console.error('Script execution failed:', chrome.runtime.lastError);
                     return;
                 }
 
-                if (response && response.imageUrl) {
+                const result = results[0]?.result;
+                if (result && result.imageUrl) {
                     // Extract filename from the image URL
-                    const filename = getFilenameFromUrl(response.imageUrl);
+                    const filename = getFilenameFromUrl(result.imageUrl);
 
                     // Initiate the download with the extracted filename
                     chrome.downloads.download({
-                        url: response.imageUrl,
+                        url: result.imageUrl,
                         filename: filename
                     }, (downloadId) => {
                         if (chrome.runtime.lastError) {
@@ -54,10 +133,10 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
                     });
                 } else {
                     // Handle errors
-                    console.error(response.error || 'An unknown error occurred.');
+                    console.error(result?.error || 'An unknown error occurred.');
                 }
             });
-        });
+        }
     }
 });
 
@@ -103,5 +182,5 @@ function getFilenameFromUrl(url) {
 // Function to sanitize filename (allowing Unicode characters)
 function sanitizeFilename(filename) {
     // Remove illegal characters: \ / : * ? " < > | and control characters
-    return filename.replace(/[\\\/:*?"<>|\x00-\x1F\x7F]/g, '_');
+    return filename.replace(/[\\/:*?"<>|\x00-\x1F\x7F]/g, '_');
 }
