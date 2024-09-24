@@ -12,13 +12,13 @@ A Chrome extension that allows you to quickly download images from any webpage b
 
 ## Installation
 ### From the Chrome Web Store
-1. Visit the **Download This Image** extension page on the [ChromeWebStore](#).
+1. Visit the **Download This Image** extension page on the [ChromeWebStore](https://chromewebstore.google.com/detail/hlehjplhhpjhkhoompddaeoafbaoklah?authuser=0&hl=en).
 2. Click on **Add to Chrome**.
 3. Confirm the installation by clicking **Add extension** in the dialog that appears.
 
 ### Manual Installation
 1. **Download the Extension Files**:
-    - Download the latest release (`download-this-image-v1.3.0.zip`) from the [GitHubReleases](#) page.
+    - Download the latest release (`download-this-image-v1.3.0.zip`).
     - Extract the contents of the zip file to a folder on your computer.
 2. **Load the Extension in Chrome**:
     - Open Google Chrome.
