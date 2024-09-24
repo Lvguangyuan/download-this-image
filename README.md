@@ -1,82 +1,61 @@
-# Download This Image Chrome Extension
+# Download This Image
+A Chrome extension that allows you to quickly download images from any webpage by right-clicking on them.
+
 ## Overview
-**Download This Image** is a Chrome extension that allows you to quickly download images from any webpage. Whether the image is displayed via an `<img>` tag or set as a CSS `background-image`, you can easily save it to your computer by right-clicking on the image and selecting "Download This Image" from the context menu.
+**Download This Image** adds a "Download This Image" option to your browser's context menu. With a simple right-click, you can effortlessly download images embedded in webpages, whether they are standard `<img>` elements or CSS background images.
 
 ## Features
-+ **Easy to Use**: Right-click and download images without leaving the page.
-+ **Supports **`**<img>**`** Tags and Background Images**: Works with both inline images and CSS background images.
-+ **Automatic Filename Extraction**: Preserves the original filename from the image URL, including support for Unicode characters like Chinese.
-+ **Unicode Support**: Handles filenames with non-ASCII characters seamlessly.
-+ **Error Handling**: Provides notifications if the image cannot be downloaded due to restrictions like CORS policies.
-+ **Lightweight and Private**: The extension is lightweight and respects your privacy by not collecting any data.
++ **Easy to Use**: Right-click on any image or element containing a background image and select "Download This Image" to save it.
++ **Automatic Filename Extraction**: The extension intelligently extracts the image's filename from its URL, providing meaningful filenames.
++ **Supports Various Image Types**: Works with images embedded via `<img>` tags and CSS `background-image` properties.
++ **Minimal Permissions**: Uses only the necessary permissions to function, enhancing security and privacy.
 
 ## Installation
-### From Source
-1. **Clone or Download the Repository**
-2. **Open the Extensions Page in Chrome**
-    - Navigate to `chrome://extensions/` in your Chrome browser.
-3. **Enable Developer Mode**
-    - Toggle the "Developer mode" switch on the top right corner of the page.
-4. **Load the Unpacked Extension**
-    - Click on the "Load unpacked" button.
-    - Select the folder where you cloned or extracted the extension files.
+### From the Chrome Web Store
+1. Visit the **Download This Image** extension page on the [ChromeWebStore](https://chromewebstore.google.com/detail/hlehjplhhpjhkhoompddaeoafbaoklah?authuser=0&hl=en).
+2. Click on **Add to Chrome**.
+3. Confirm the installation by clicking **Add extension** in the dialog that appears.
 
-### From Chrome Web Store (if published)
-+ Visit the [ChromeWebStoreURL](#) and click "Add to Chrome".
+### Manual Installation
+1. **Download the Extension Files**:
+    - Download the latest release (`download-this-image-v1.3.0.zip`).
+    - Extract the contents of the zip file to a folder on your computer.
+2. **Load the Extension in Chrome**:
+    - Open Google Chrome.
+    - Navigate to `chrome://extensions/` in the address bar.
+    - Enable **Developer mode** by toggling the switch in the upper-right corner.
+    - Click on **Load unpacked**.
+    - Select the folder where you extracted the extension files.
 
 ## Usage
-1. **Navigate to a Webpage**
-    - Go to any website that contains images displayed via `<img>` tags or CSS `background-image`.
-2. **Right-Click on an Image**
-    - Locate the image you want to download.
-    - Right-click on the image or the element containing the background image.
-3. **Select "Download This Image"**
+1. **Navigate to a Webpage**:
+    - Go to any website containing images you wish to download.
+2. **Right-Click on an Image**:
+    - For standard images: Right-click directly on the image.
+    - For background images: Right-click on the element containing the background image.
+3. **Select "Download This Image"**:
     - In the context menu, click on **"Download This Image"**.
-4. **Image Downloaded**
-    - The image will be downloaded to your default download directory.
-    - The filename will be extracted from the image URL, preserving the original name and supporting Unicode characters.
-
-## Screenshots
-_Right-click context menu option.__Notification of successful download._
+4. **Image Downloaded**:
+    - The image will be saved to your default download directory with an appropriate filename.
 
 ## Permissions
 The extension requires the following permissions:
 
-+ `**downloads**`: To save images to your local machine.
-+ `**contextMenus**`: To add the option to the right-click context menu.
-+ `**scripting**`: To execute scripts that interact with web pages.
-+ `**notifications**`: To display download status notifications.
-+ `**host permissions**` (`<all_urls>`): To operate on all websites you visit.
++ `**contextMenus**`: To add the "Download This Image" option to the right-click context menu.
++ `**downloads**`: To save images to your device.
++ `**scripting**`: To execute scripts in the context of web pages when necessary.
++ `**activeTab**`: To access the active tab when the context menu is used.
 
-## How It Works
-+ **Content Script (**`**content-script.js**`**)**: Listens for right-click events to identify the clicked element and retrieves its image URL, whether from an `<img>` tag or a `background-image` CSS property.
-+ **Background Script (**`**background.js**`**)**: Handles the creation of the context menu and communicates with the content script to initiate the download.
-+ **Filename Extraction**: Extracts the filename from the image URL, properly handling URLs with Unicode characters and sanitizing filenames to remove illegal characters.
+## Privacy Policy
+**Download This Image** respects your privacy:
 
-## Limitations
-+ **CORS Restrictions**: Some images may not download due to Cross-Origin Resource Sharing policies.
-+ **Data URLs**: Images defined as data URLs (e.g., base64-encoded images) are not currently supported.
-+ **Authentication**: Images that require authentication or are behind paywalls may not be accessible.
++ No data is collected or transmitted.
++ All operations are performed locally on your device.
++ The extension does not access or modify your browsing data beyond its intended functionality.
 
-## Development
-### File Structure
-+ `manifest.json`: Extension manifest file.
-+ `background.js`: Background service worker script.
-+ `content-script.js`: Content script injected into web pages.
-+ `const.js`: Shared constants used by both scripts.
-+ `icons/`: Directory containing extension icons.
-+ `screenshots/`: Directory containing images for the README.
-
-### Building the Extension
-No build process is required. The extension runs directly from the source files.
+## Support
+If you encounter any issues or have suggestions, please open an issue on the [GitHubrepository](#).
 
 ## License
 This project is licensed under the [MITLicense](LICENSE).
-
-## Acknowledgments
-+ Thanks to everyone who has contributed to improving this extension.
-+ Inspired by the need for quick access to webpage images for design and development purposes.
-
-## Disclaimer
-This extension is provided "as is" without warranty of any kind. Use it at your own risk. Ensure you have permission to download images from the websites you visit.
 
