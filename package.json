@@ -1,0 +1,12 @@
+{
+  "name": "download-this-image-text-chrome-extension",
+  "version": "1.0.0",
+  "description": "Official samples for Chrome Extensions and the Chrome Apps platform.",
+  "keywords": [],
+  "author": "Gary Lyu",
+  "license": "Apache 2.0",
+  "homepage": "https://github.com/GoogleChrome/chrome-extensions-samples#readme",
+  "devDependencies": {
+    "chrome-types": "0.1.306"
+  }
+}
