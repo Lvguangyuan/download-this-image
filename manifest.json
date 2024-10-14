@@ -2,11 +2,10 @@
   "manifest_version": 3,
   "name": "Download This Image",
   "version": "1.4.0",
-  "description": "Quickly download images from any webpage by right-clicking on them.",
+  "description": "Quickly download (css background)images from any webpage by right-clicking on them.",
   "permissions": [
     "downloads",
     "contextMenus",
-    "scripting",
     "activeTab"
   ],
   "background": {
